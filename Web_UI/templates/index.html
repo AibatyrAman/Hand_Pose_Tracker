@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL & FreiHAND Neural Translator</title>
+    <!-- Modern Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Arka plan animasyonları (Neon orbs) -->
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <div class="app-container">
+        <!-- Sidebar / Header -->
+        <header class="glass-panel main-header">
+            <div class="logo">
+                <span class="gradient-text">Neural</span>Translator
+            </div>
+            <div class="subtitle">Edge AI Hand Pose & Sign Language Recognition</div>
+            
+            <div class="nav-buttons">
+                <button id="btn-compare" class="nav-btn active">FreiHAND Model Kıyaslaması</button>
+                <button id="btn-asl" class="nav-btn">Canlı ASL Çevirmeni</button>
+            </div>
+        </header>
+
+        <!-- View 1: 3-Model Comparison -->
+        <section id="view-compare" class="view-section active">
+            <div class="view-header">
+                <h2>Gerçek Zamanlı Model Kıyaslaması (Inference)</h2>
+                <p>Üç farklı mimarinin aynı kare üzerindeki tahmin (Heatmap/Regression) hız ve hata oranları.</p>
+            </div>
+
+            <div class="video-grid">
+                <!-- MobileNet -->
+                <div class="video-card glass-panel">
+                    <div class="card-header">
+                        <h3>MobileNet + Huber Loss</h3>
+                        <span class="badge badge-fast">Yüksek FPS</span>
+                        <span class="badge badge-error">14.80 mm Hata</span>
+                    </div>
+                    <div class="video-wrapper">
+                        <!-- Sadece bu sekme açıldığında yüklenmesi için src'yi data-src yaptık -->
+                        <img class="feed" id="feed-mobilenet" data-src="/video_feed/MobileNet_Huber" alt="MobileNet Stream">
+                    </div>
+                    <div class="card-footer">
+                        <p>Zaman zaman parmak kaybı (detection drop) yaşanır.</p>
+                    </div>
+                </div>
+
+                <!-- ResNet MSE -->
+                <div class="video-card glass-panel">
+                    <div class="card-header">
+                        <h3>ResNet50 + MSE Loss</h3>
+                        <span class="badge badge-medium">Orta FPS</span>
+                        <span class="badge badge-error">11.42 mm Hata</span>
+                    </div>
+                    <div class="video-wrapper">
+                        <img class="feed" id="feed-mse" data-src="/video_feed/ResNet_MSE" alt="ResNet MSE Stream">
+                    </div>
+                    <div class="card-footer">
+                        <p>Aykırı değerlere (Outliers) duyarlı, yüksek titreşimli (Jitter).</p>
+                    </div>
+                </div>
+
+                <!-- ResNet Huber -->
+                <div class="video-card glass-panel">
+                    <div class="card-header">
+                        <h3>ResNet50 + Huber Loss</h3>
+                        <span class="badge badge-slow">Düşük FPS</span>
+                        <span class="badge badge-success">9.15 mm Hata</span>
+                    </div>
+                    <div class="video-wrapper">
+                        <img class="feed" id="feed-huber" data-src="/video_feed/ResNet_Huber" alt="ResNet Huber Stream">
+                    </div>
+                    <div class="card-footer">
+                        <p>En yavaş model, fakat titreme yok ve yüksek isabetli.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View 2: Live ASL Translator -->
+        <section id="view-asl" class="view-section hidden">
+            <div class="view-header">
+                <h2>Üretim (Production) Sürümü: MLP ASL Çevirmeni</h2>
+                <p>Keras silindi, sadece ağırlıklar (Weights) tutularak saf NumPy ve Sürgülü Pencere ile yazıldı. 30GB -> 95MB RAM tasarrufu.</p>
+            </div>
+
+            <div class="asl-container">
+                <div class="asl-video glass-panel">
+                    <img class="feed" id="feed-asl" data-src="/video_feed/asl" alt="ASL Stream">
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript to handle view switching and lazy loading of camera streams -->
+    <script>
+        const btnCompare = document.getElementById('btn-compare');
+        const btnAsl = document.getElementById('btn-asl');
+        const viewCompare = document.getElementById('view-compare');
+        const viewAsl = document.getElementById('view-asl');
+        
+        const feedsCompare = [
+            document.getElementById('feed-mobilenet'),
+            document.getElementById('feed-mse'),
+            document.getElementById('feed-huber')
+        ];
+        const feedAsl = document.getElementById('feed-asl');
+
+        // Sayfa ilk yüklendiğinde Kıyaslama sekmesi aktif, o yüzden o videoları başlat
+        feedsCompare.forEach(img => img.src = img.getAttribute('data-src'));
+
+        btnCompare.addEventListener('click', () => {
+            btnCompare.classList.add('active');
+            btnAsl.classList.remove('active');
+            
+            viewCompare.classList.remove('hidden');
+            viewCompare.classList.add('active');
+            viewAsl.classList.remove('active');
+            setTimeout(() => viewAsl.classList.add('hidden'), 300); // Wait for fade out
+            
+            // ASL kamerasını durdur, diğerlerini başlat
+            feedAsl.src = "";
+            feedsCompare.forEach(img => img.src = img.getAttribute('data-src'));
+        });
+
+        btnAsl.addEventListener('click', () => {
+            btnAsl.classList.add('active');
+            btnCompare.classList.remove('active');
+            
+            viewAsl.classList.remove('hidden');
+            viewAsl.classList.add('active');
+            viewCompare.classList.remove('active');
+            setTimeout(() => viewCompare.classList.add('hidden'), 300);
+
+            // 3 kamerayı durdur, ASL kamerasını başlat
+            feedsCompare.forEach(img => img.src = "");
+            feedAsl.src = feedAsl.getAttribute('data-src');
+        });
+
+        // Klavye dinleyicisi (Sadece ASL modunda çalışır)
+        document.addEventListener('keydown', (e) => {
+            if (!viewAsl.classList.contains('active')) return;
+            
+            let action = null;
+            if (e.key.toLowerCase() === 'c') action = 'c';
+            else if (e.key === ' ') { action = 'space'; e.preventDefault(); }
+            else if (e.key === 'Backspace') action = 'backspace';
+            else if (e.key === 'Escape') action = 'clear';
+
+            if (action) {
+                fetch('/asl_action', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({action: action})
+                });
+            }
+        });
+    </script>
+</body>
+</html>
