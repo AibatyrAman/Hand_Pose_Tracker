@@ -1,20 +1,20 @@
 <div align="center">
-  <h1>🧠 3D Hand Pose Estimation & Architecture Benchmark</h1>
+  <h1>3D Hand Pose Estimation & Architecture Benchmark</h1>
   <p><strong>FreiHAND Veri Seti Üzerinde ResNet ve MobileNet Kıyaslama Arayüzü</strong></p>
 </div>
 
 <br>
 
-![Pose Tracer Dashboard](docs/placeholder_dashboard.png)
+![Pose Tracer Dashboard](docs/hand_tracker_exp.gif)
 
-## 📖 Proje Hakkında
+## Proje Hakkında
 Bu akademik proje, **FreiHAND** veri seti kullanılarak 3 Boyutlu El Pozu Tahmini (3D Hand Pose Estimation) problemi üzerine inşa edilmiştir. Projenin temel amacı, farklı Evrişimli Sinir Ağı (CNN) omurgalarının ve kayıp (loss) fonksiyonlarının gerçek zamanlı çıkarım (inference) performanslarını ve gürültüye karşı hassasiyetlerini (jitter) canlı olarak kıyaslamaktır.
 
 Hazırlanan **Flask Web Dashboard** sayesinde, üç farklı model aynı anda çalıştırılarak başarım hızları ve yapısal hataları (structural bias) gözlemlenebilir.
 
 ---
 
-## 🧪 Kıyaslanan Modeller ve Özellikleri
+## Kıyaslanan Modeller ve Özellikleri
 
 Dashboard üzerinde aynı anda çalışan modeller:
 
@@ -30,7 +30,7 @@ Dashboard üzerinde aynı anda çalışan modeller:
 
 ---
 
-## 🛠️ Kurulum ve Dashboard'u Başlatma
+## Kurulum ve Dashboard'u Başlatma
 
 ```bash
 git clone https://github.com/KULLANICI_ADINIZ/3D-Hand-Pose-Tracer.git
