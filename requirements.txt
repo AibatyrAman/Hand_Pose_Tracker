@@ -1,5 +1,5 @@
 flask
-mediapipe
+numpy==2.4.5
+mediapipe==0.10.14
 opencv-python
-numpy
 matplotlib
