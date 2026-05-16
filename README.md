@@ -33,8 +33,8 @@ Dashboard üzerinde aynı anda çalışan modeller:
 ## Kurulum ve Dashboard'u Başlatma
 
 ```bash
-git clone https://github.com/KULLANICI_ADINIZ/3D-Hand-Pose-Tracer.git
-cd 3D-Hand-Pose-Tracer
+git clone https://github.com/AibatyrAman/Hand_Pose_Tracker.git
+cd Hand_Pose_Tracker
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
